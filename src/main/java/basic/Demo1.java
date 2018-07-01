@@ -1,16 +1,20 @@
 package basic;
 
 import com.fqyang.AddressBookProtos;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
 public class Demo1 {
 
     public static void main(String args[]){
         //ConstructAndSerializeToLocalFile();
-        DeserializeFromFile();
+        //DeserializeFromFile();
+
+        FromAndToByteArray();
         System.out.println("done");
     }
 
@@ -69,6 +73,37 @@ public class Demo1 {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void FromAndToByteArray(){
+        AddressBookProtos.Person.Builder person =  AddressBookProtos.Person.newBuilder();
+
+        person.setId(1);
+        person.setName("Lilei");
+        person.setEmail("fqyang@163.com");
+
+        AddressBookProtos.Person.PhoneNumber.Builder MobileNumber =
+                AddressBookProtos.Person.PhoneNumber.newBuilder().setNumber("4099134756");
+        MobileNumber.setType(AddressBookProtos.Person.PhoneType.MOBILE);
+        person.addPhones(MobileNumber);
+
+        AddressBookProtos.Person.PhoneNumber.Builder HomeNumber =
+                AddressBookProtos.Person.PhoneNumber.newBuilder().setNumber("10086");
+        HomeNumber.setType(AddressBookProtos.Person.PhoneType.HOME);
+        person.addPhones(HomeNumber);
+
+        byte[] result = person.build().toByteArray();
+        System.out.println("byte array len: " + result.length);
+
+        try {
+            AddressBookProtos.Person PersonCopy = AddressBookProtos.Person.parseFrom(result);
+
+            System.out.println("Person ID: " + PersonCopy.getId());
+            System.out.println("Name: " + PersonCopy.getName());
+            System.out.println("Email: " + PersonCopy.getEmail());
+        } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
     }
