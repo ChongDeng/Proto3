@@ -1,6 +1,8 @@
 package basic;
 
 import com.fqyang.AddressBookProtos;
+import com.fqyang.AnyProtos;
+import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.FileInputStream;
@@ -14,7 +16,9 @@ public class Demo1 {
         //ConstructAndSerializeToLocalFile();
         //DeserializeFromFile();
 
-        FromAndToByteArray();
+        //FromAndToByteArray();
+
+        AnyTest();
         System.out.println("done");
     }
 
@@ -103,6 +107,38 @@ public class Demo1 {
             System.out.println("Person ID: " + PersonCopy.getId());
             System.out.println("Name: " + PersonCopy.getName());
             System.out.println("Email: " + PersonCopy.getEmail());
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void AnyTest(){
+        AnyProtos.Base.Builder base = AnyProtos.Base.newBuilder();
+        base.setType(AnyProtos.Type.FACE);
+        base.setPageNumber(2);
+        base.setResultPerPage(666);
+
+        AnyProtos.Face.Builder face = AnyProtos.Face.newBuilder();
+        face.setName("guci");
+
+        AnyProtos.Plate.Builder plate = AnyProtos.Plate.newBuilder();
+        plate.setEmail("pra@163.com");
+
+        Any any = Any.pack(face.build());
+        base.addObject(any);
+
+        byte[] result = base.build().toByteArray();
+        try {
+            AnyProtos.Base BaseCopy = AnyProtos.Base.parseFrom(result);
+
+            System.out.println("page number: " + BaseCopy.getPageNumber());
+            for (Any item : BaseCopy.getObjectList()) {
+                if(item.is(AnyProtos.Face.class)){
+                    System.out.println("yes! a face type!");
+                    AnyProtos.Face face_copy = item.unpack(AnyProtos.Face.class);
+                    System.out.println("get value from this any type: " + face_copy.getName());
+                }
+            }
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
