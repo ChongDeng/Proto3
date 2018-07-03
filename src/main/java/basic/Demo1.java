@@ -2,6 +2,7 @@ package basic;
 
 import com.fqyang.AddressBookProtos;
 import com.fqyang.AnyProtos;
+import com.fqyang.OneOfProtos;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -18,7 +19,9 @@ public class Demo1 {
 
         //FromAndToByteArray();
 
-        AnyTest();
+        //AnyTest();
+
+        OneOfTest();
         System.out.println("done");
     }
 
@@ -142,5 +145,38 @@ public class Demo1 {
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private static void OneOfTest(){
+        OneOfProtos.MyMessage.Builder msg = OneOfProtos.MyMessage.newBuilder();
+        msg.setUid(666);
+
+        OneOfProtos.MsgType1.Builder type1 = OneOfProtos.MsgType1.newBuilder();
+        type1.setValue(1);
+
+        OneOfProtos.MsgType3.Builder type3 = OneOfProtos.MsgType3.newBuilder();
+        type3.setValue1(11);  type3.setValue2(12);
+
+        msg.setMsg3(type3);
+
+        byte[] result = msg.build().toByteArray();
+        try {
+            OneOfProtos.MyMessage msg_copy = OneOfProtos.MyMessage.parseFrom(result);
+            //get a value which has not been set
+            System.out.println("PID: " + msg_copy.getPid());
+
+            if(msg_copy.hasMsg3()){
+                System.out.print("has msg3: ");
+                System.out.print("value 1: " + msg_copy.getMsg3().getValue1());
+                System.out.println("  value 3: " + msg_copy.getMsg3().getValue2());
+            }
+            if(msg_copy.hasMsg1()) System.out.println("has msg1!");
+            else System.out.println("does not have msg1!");
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
     }
 }
