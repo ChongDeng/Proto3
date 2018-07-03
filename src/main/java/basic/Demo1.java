@@ -2,6 +2,7 @@ package basic;
 
 import com.fqyang.AddressBookProtos;
 import com.fqyang.AnyProtos;
+import com.fqyang.MapProtos;
 import com.fqyang.OneOfProtos;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -21,7 +22,10 @@ public class Demo1 {
 
         //AnyTest();
 
-        OneOfTest();
+        //OneOfTest();
+
+        MapTest();
+
         System.out.println("done");
     }
 
@@ -178,5 +182,21 @@ public class Demo1 {
             e.printStackTrace();
         }
 
+    }
+
+    private static void MapTest(){
+        MapProtos.Man.Builder man = MapProtos.Man.newBuilder();
+        man.putSkills("C++", "master");
+        man.putSkills("Java", "excellent");
+        man.putSkills("big data", "nice");
+
+        byte[] result = man.build().toByteArray();
+        try {
+            MapProtos.Man ManCopy = MapProtos.Man.parseFrom(result);
+
+            System.out.println("value: " + ManCopy.getSkillsMap().get("C++"));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
     }
 }
