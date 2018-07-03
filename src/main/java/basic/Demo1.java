@@ -6,11 +6,10 @@ import com.fqyang.MapProtos;
 import com.fqyang.OneOfProtos;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
 
 public class Demo1 {
 
@@ -24,7 +23,9 @@ public class Demo1 {
 
         //OneOfTest();
 
-        MapTest();
+        //MapTest();
+
+        FromAndToJson();
 
         System.out.println("done");
     }
@@ -196,6 +197,25 @@ public class Demo1 {
 
             System.out.println("value: " + ManCopy.getSkillsMap().get("C++"));
         } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void FromAndToJson(){
+        MapProtos.Man.Builder man = MapProtos.Man.newBuilder();
+        man.putSkills("C++", "master");
+        man.putSkills("Java", "excellent");
+        man.putSkills("big data", "nice");
+
+        try {
+           //   JsonFormat.printer();
+            String JsonStr = JsonFormat.printer().print(man);
+            System.out.println("json: " + JsonStr);
+
+            MapProtos.Man.Builder ManCopy = MapProtos.Man.newBuilder();
+            JsonFormat.parser().merge(JsonStr, ManCopy);
+            System.out.println("value: " + ManCopy.getSkillsMap().get("C++"));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
